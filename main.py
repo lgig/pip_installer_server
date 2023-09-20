@@ -1,13 +1,11 @@
 import os
 import subprocess
 import uvicorn
-import time
 
-from fastapi import Depends, FastAPI, HTTPException, Query, WebSocket
+from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel
 from threading import Lock
-from typing import Union, Literal, Optional
 from typing_extensions import Annotated
 
 
