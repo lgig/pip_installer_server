@@ -47,7 +47,7 @@ def execute_within_lock(lock, predicate, parameters):
    lock.release()
  return result
 
-def pip_install_env_varialbes() -> dict[str, str] | None:
+def pip_install_env_varialbes():
   if SSH_KEY_PATH is not None:
     return {'GIT_SSH_COMMAND': f'ssh -i {SSH_KEY_PATH}'}
   return None
