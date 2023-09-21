@@ -1,13 +1,11 @@
 import os
 import subprocess
 import uvicorn
-import time
 
-from fastapi import Depends, FastAPI, HTTPException, Query, WebSocket
+from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel
 from threading import Lock
-from typing import Union, Literal, Optional
 from typing_extensions import Annotated
 
 
@@ -23,6 +21,8 @@ CONFIG_AUTH_PASSWORD = os.environ['PIP_INSTALLER_PASSWORD']
 CONFIG_PIP_CMD = 'pip3'
 CONFIG_REPO_URL = os.environ['PIP_INSTALLER_REPO_URL']
 CONFIG_ALLOWED_PACKAGES = os.environ['PIP_INSTALLER_PACKAGES']
+SSH_KEY_PATH = os.environ.get('SSH_KEY_PATH', None)
+
 
 # Validation config
 ALLOWED_PACKAGES_ARRAY = CONFIG_ALLOWED_PACKAGES.split(',')
@@ -47,8 +47,13 @@ def execute_within_lock(lock, predicate, parameters):
    lock.release()
  return result
 
+def pip_install_env_varialbes():
+  if SSH_KEY_PATH is not None:
+    return {'GIT_SSH_COMMAND': f'ssh -i {SSH_KEY_PATH}'}
+  return None
+
 def run(args):
-  process = subprocess.run(args, capture_output=True, text=True)
+  process = subprocess.run(args, capture_output=True, text=True, env=pip_install_env_varialbes())
   return [process.returncode, process.stdout, process.stderr]
    
 def install_critical_section(parameters):
